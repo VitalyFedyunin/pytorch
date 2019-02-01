@@ -4,6 +4,8 @@
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAGuard.h>
 #include <ATen/cuda/Exceptions.h>
+#include "c10/macros/Macros.h"
+#include "c10/util/Backtrace.h"
 
 #include <cuda_runtime_api.h>
 #include <algorithm>
@@ -254,15 +256,18 @@ struct THCCachingAllocator
     }
 
     block->allocated = true;
+
     allocated_blocks[block->ptr] = block;
 
     *devPtr = (void*)block->ptr;
+    // std::cout << "Allocated new block " << ((void*)block->ptr) << " size "<< size << "\n";
 
     stats.increaseAllocated(block->size);
   }
 
   void free(void* ptr)
   {
+    // std::cout << "Free memory from " << ptr << "\n";
     std::lock_guard<std::mutex> lock(mutex);
     if (!ptr) {
       return;
@@ -270,12 +275,14 @@ struct THCCachingAllocator
 
     auto it = allocated_blocks.find(ptr);
     if (it == allocated_blocks.end()) {
+      std::cout << "BACKTRACE\n" << at::get_backtrace(0,  64, false);
       AT_ERROR("invalid device pointer: ", ptr);
     }
 
     Block* block = it->second;
     allocated_blocks.erase(it);
     block->allocated = false;
+    // std::cout << "Removed associated block " << ptr << " size of " << block->size << "\n";
 
     get_stats_for_device(block->device).decreaseAllocated(block->size);
     if (!block->stream_uses.empty()) {
@@ -354,6 +361,7 @@ struct THCCachingAllocator
   /** moves a block into the free block list */
   void free_block(Block* block)
   {
+    // std::cout << "Free block happening\n";
     THAssert(!block->allocated && block->event_count == 0);
     bool small = block->size <= kSmallAlloc;
     auto& free_blocks = small ? small_blocks : large_blocks;
@@ -510,6 +518,8 @@ struct THCCachingAllocator
 THCCachingAllocator caching_allocator;
 
 static void CudaCachingDeleter(void* ptr) {
+  // std::cout << at::get_backtrace();
+  // std::cout << "\nDelete CUDA " << ptr << "\n";
   caching_allocator.free(ptr);
 }
 
@@ -634,6 +644,7 @@ AT_CUDA_API std::shared_ptr<void> THCCaching_CUDAIpcDevptr(std::string handle) {
   // enable IPC access to that mem block.
   void *dev = nullptr;
   auto ipc_handle = reinterpret_cast<const cudaIpcMemHandle_t*>(handle.c_str());
+  // std::cout << "Grab IPC Handle\n";
   THCudaCheck(cudaIpcOpenMemHandle(&dev, *ipc_handle, cudaIpcMemLazyEnablePeerAccess));
   // devPtr has to be deleted in same device when created.
   int curr_device;
@@ -641,6 +652,8 @@ AT_CUDA_API std::shared_ptr<void> THCCaching_CUDAIpcDevptr(std::string handle) {
   auto sp = std::shared_ptr<void>(
       dev,
       [handle, curr_device](void *ptr) {
+         // std::cout << "Release IPC Handle\n"  << at::get_backtrace(0,  64, false);
+
         at::cuda::CUDAGuard device_guard(curr_device);
         std::lock_guard<std::mutex> lock(IpcMutex);
         THCudaCheck(cudaIpcCloseMemHandle(ptr));
@@ -654,4 +667,3 @@ AT_CUDA_API std::shared_ptr<void> THCCaching_CUDAIpcDevptr(std::string handle) {
 
   return sp;
 }
-

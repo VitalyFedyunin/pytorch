@@ -351,6 +351,7 @@ static VOID CALLBACK WaitForReleaseHandle(PVOID lpParam, BOOLEAN TimerOrWaitFire
 #endif
 
 void THMapAllocator::close() {
+  // std::cout << "Closing allocator for file " << filename_ << "\n";
   if (closed_) {
     return;
   }
@@ -365,11 +366,12 @@ void THMapAllocator::close() {
     AT_ERROR("could not unmap the shared memory file");
 #else /* _WIN32 */
   if (flags_ & TH_ALLOCATOR_MAPPED_KEEPFD) {
+    // std::cout << "Closing FD for file " << filename_ << "\n";
     if (::close(fd_) == -1) {
       AT_ERROR("could not close file descriptor ", fd_);
     }
   }
-
+// std::cout << "munmap for file " << filename_ << "\n";
   if (munmap(base_ptr_, size_)) {
     AT_ERROR("could not unmap the shared memory file");
   }
@@ -377,6 +379,7 @@ void THMapAllocator::close() {
   if (!(flags_ & (TH_ALLOCATOR_MAPPED_FROMFD | TH_ALLOCATOR_MAPPED_UNLINK))) {
     if (flags_ & TH_ALLOCATOR_MAPPED_SHAREDMEM) {
 #ifdef HAVE_SHM_UNLINK
+      // std::cout << "shm_unlink for file " << filename_ << "\n";
       if (shm_unlink(filename_.c_str()) == -1) {
         AT_ERROR("could not unlink the shared memory file ", filename_);
       }
@@ -475,6 +478,7 @@ void THRefcountedMapAllocator::close() {
   THMapInfo *info = (THMapInfo*)(data);
   if (--info->refcount == 0) {
 #ifdef HAVE_SHM_UNLINK
+// std::cout << "shm_unlink for file " << filename_ << "\n";
     if (shm_unlink(filename_.c_str()) == -1) {
       AT_ERROR("could not unlink the shared memory file ", filename_);
     }
@@ -519,6 +523,7 @@ THRefcountedMapAllocator::~THRefcountedMapAllocator() {}
 #endif
 
 static void deleteTHMapAllocator(void* ptr) {
+  // std::cout << "deleteTHMapAllocator for file " << static_cast<THMapAllocator*>(ptr)->filename() << "\n";
   delete static_cast<THMapAllocator*>(ptr);
 }
 
@@ -535,12 +540,14 @@ THRefcountedMapAllocator* THRefcountedMapAllocator::fromDataPtr(const at::DataPt
 }
 
 at::DataPtr THMapAllocator::makeDataPtr(const char *filename, int flags, size_t size, size_t* actual_size_out) {
+  // std::cout << "makeDataPtr for file " << filename << "\n";
   auto* context = new THMapAllocator(filename, flags, size);
   if (actual_size_out) *actual_size_out = context->size();
   return {context->data(), context, &deleteTHMapAllocator, at::DeviceType::CPU};
 }
 
 at::DataPtr THMapAllocator::makeDataPtr(WithFd, const char *filename, int fd, int flags, size_t size, size_t* actual_size_out) {
+  // std::cout << "makeDataPtr for file (WITH_FD) " << filename << "\n";
   auto* context = new THMapAllocator(WITH_FD, filename, fd, flags, size);
   if (actual_size_out) *actual_size_out = context->size();
   return {context->data(), context, &deleteTHMapAllocator, at::DeviceType::CPU};

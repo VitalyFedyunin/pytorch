@@ -4,7 +4,7 @@
 
 #include <ATen/Allocator.h>
 
-#define TH_ALLOCATOR_MAPPED_SHARED 1
+#define TH_ALLOCATOR_MAPPED_SHARED 1 // TODO: Document values of the flags
 #define TH_ALLOCATOR_MAPPED_SHAREDMEM 2
 #define TH_ALLOCATOR_MAPPED_EXCLUSIVE 4
 #define TH_ALLOCATOR_MAPPED_NOCREATE 8

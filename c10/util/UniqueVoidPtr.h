@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <iostream>
 
 #include <c10/macros/Macros.h>
 

@@ -8,6 +8,33 @@
 
 namespace c10 {
 
+struct MPRefCounter {
+ public:
+  void inc_counter();
+  void dec_counter();
+  int64_t get_count();
+  MPRefCounter(std::string handle, DataPtr data_ptr);
+  ~MPRefCounter();
+  // MPRefCounter();
+  std::string get_handle();
+
+ private:
+  DataPtr data_ptr_;
+  std::string handle_;
+  // int64_t *counter;
+};
+
+struct MPSharedDataBlock {
+  DataPtr data_ptr_;
+  MPRefCounter* ref_counter_;
+};
+
+struct MPSharedStorageLimbo {
+  std::vector<MPSharedDataBlock> shared_blocks_;
+  void collect();
+  void add(MPSharedDataBlock shared_block);
+};
+
 struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
  public:
   StorageImpl(
@@ -15,19 +42,7 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
       int64_t numel,
       at::DataPtr data_ptr,
       at::Allocator* allocator,
-      bool resizable)
-      : data_type_(data_type),
-        data_ptr_(std::move(data_ptr)),
-        numel_(numel),
-        resizable_(resizable),
-        allocator_(allocator) {
-    if (numel > 0) {
-      if (data_type_.id() == caffe2::TypeIdentifier::uninitialized()) {
-        AT_ERROR(
-            "Constructing a storage with meta of unknown type and non-zero numel");
-      }
-    }
-  }
+      bool resizable);
 
   StorageImpl(
       caffe2::TypeMeta data_type,
@@ -53,12 +68,9 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
   StorageImpl() = delete;
   StorageImpl(StorageImpl&& other) = default;
   StorageImpl(const StorageImpl&) = delete;
-  ~StorageImpl() = default;
+  ~StorageImpl();
 
-  void reset() {
-    data_ptr_.clear();
-    numel_ = 0;
-  }
+  void reset();
 
   template <typename T>
   inline bool IsType() const {
@@ -69,7 +81,8 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
   inline T* data() const {
     // TODO: This is bad: it means storage.data<T>() calls only work on
     // T that are valid ScalarType.  FIXME!
-    auto data_type_T = at::scalarTypeToDataType(c10::CTypeToScalarType<T>::to());
+    auto data_type_T =
+        at::scalarTypeToDataType(c10::CTypeToScalarType<T>::to());
     if (dtype().id() != data_type_T) {
       AT_ERROR(
           "Attempt to access StorageImpl having data type ",
@@ -85,9 +98,7 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
     return static_cast<T*>(this->data_ptr_.get());
   }
 
-  void release_resources() override {
-    data_ptr_.clear();
-  }
+  void release_resources() override;
 
   size_t itemsize() const {
     return data_type_.itemsize();
@@ -174,6 +185,18 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
     resizable_ = resizable;
   }
 
+  void set_cuda_ipc_sent(bool cuda_ipc_sent) {
+    cuda_ipc_sent_ = cuda_ipc_sent;
+  }
+
+  void set_cuda_ipc_received(bool cuda_ipc_received) {
+    cuda_ipc_received_ = cuda_ipc_received;
+  }
+
+  bool cuda_ipc_received() {
+    return cuda_ipc_received_;
+  }
+
   /**
    * Can only be called when use_count is 1
    */
@@ -210,11 +233,22 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
     numel_ = capacity / data_type_.itemsize();
   }
 
+  MPRefCounter* get_refcounter();
+  int64_t get_refcounter_value();
+  std::string get_refcounter_handle();
+  void inc_refcounter();
+  bool have_refcounter();
+  void set_refcounter(MPRefCounter* ref_counter);
+  void set_refcounter(std::string handle, DataPtr data_ptr);
+
  private:
   caffe2::TypeMeta data_type_;
   DataPtr data_ptr_;
   int64_t numel_;
   bool resizable_;
+  bool cuda_ipc_sent_;
+  bool cuda_ipc_received_;
   Allocator* allocator_;
+  MPRefCounter* ref_counter_;
 };
 } // namespace c10

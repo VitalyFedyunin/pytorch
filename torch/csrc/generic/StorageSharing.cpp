@@ -5,6 +5,7 @@
 #endif
 
 #include <random>
+#include <c10/core/StorageImpl.h>
 
 static PyObject * THPStorage_(sharedDecref)(THPStorage *self)
 {
@@ -35,7 +36,6 @@ static PyObject * THPStorage_(sharedIncref)(THPStorage *self)
   END_HANDLE_TH_ERRORS
 }
 
-#ifndef THC_GENERIC_FILE
 // TODO: move this somewhere - we only need one version
 static std::string THPStorage_(__newHandle)() {
   static std::random_device rd;
@@ -50,6 +50,7 @@ static std::string THPStorage_(__newHandle)() {
   return handle;
 }
 
+#ifndef THC_GENERIC_FILE
 static THWStorage* THPStorage_(newFilenameStorage)(ptrdiff_t size)
 {
   int flags = TH_ALLOCATOR_MAPPED_SHAREDMEM | TH_ALLOCATOR_MAPPED_EXCLUSIVE;
@@ -216,13 +217,21 @@ static PyObject * THPStorage_(shareCuda)(THPStorage *self)
 {
   HANDLE_TH_ERRORS
   THWStorage *storage = self->cdata;
+
+  if (storage->cuda_ipc_received()){
+    THPUtils_setError("can't resend a tensor received from another process");
+    return nullptr;
+  }
+
   at::DeviceGuard device_guard(storage->device());
-  THPObjectPtr tuple(PyTuple_New(4));
+  THPObjectPtr tuple(PyTuple_New(5));
   THPObjectPtr device(PyLong_FromLong(storage->device().index()));
   THPObjectPtr _handle(Py_None);
   Py_INCREF(Py_None);
   THPObjectPtr size_bytes(PyLong_FromLong(storage->numel() * sizeof(scalar_t)));
   THPObjectPtr _offset_bytes(PyLong_FromLong(0));
+  THPObjectPtr _ref_counter(Py_None);
+  Py_INCREF(Py_None);
   if (THWStorage_(data)(LIBRARY_STATE storage)) {
     size_t base_size;
     void *base_ptr = THCCachingAllocator_getBaseAllocation(THWStorage_(data)(LIBRARY_STATE storage), &base_size);
@@ -230,7 +239,26 @@ static PyObject * THPStorage_(shareCuda)(THPStorage *self)
 
     cudaIpcMemHandle_t handle;
     THCudaCheck(cudaIpcGetMemHandle(&handle, base_ptr));
+    // storage->set_cudaipchandle(true);
 
+    // std::string handle;
+    if (!storage->have_refcounter()) {
+      // handle = THPStorage_(__newHandle)();
+      int flags = TH_ALLOCATOR_MAPPED_SHAREDMEM |
+                  TH_ALLOCATOR_MAPPED_EXCLUSIVE;
+      std::string handle = THPStorage_(__newHandle)();
+      at::DataPtr sptr = THRefcountedMapAllocator::makeDataPtr(handle.c_str(), flags, sizeof(int64_t), nullptr);
+      storage->set_refcounter(handle, std::move(sptr));
+    }
+
+    // c10::MPRefCounter* ref_counter = storage->get_refcounter();
+    storage->inc_refcounter();
+    storage->set_cuda_ipc_sent(true);
+    std::string ref_counter_handle = storage->get_refcounter_handle();
+    // std::cout << "SENT ref_counter " << storage->get_refcounter_value() << " handle " << ref_counter_handle << '\n';
+    // ref_counter->inc_counter();
+    _ref_counter = PyBytes_FromString(ref_counter_handle.c_str());
+    // std::cout << "Sharing storage now [ CREATE REF COUNTER HERE ]\n";
     _handle = PyBytes_FromStringAndSize((char *)&handle, CUDA_IPC_HANDLE_SIZE);
     _offset_bytes = PyLong_FromSsize_t((Py_ssize_t)offset_bytes);
   }
@@ -248,6 +276,7 @@ static PyObject * THPStorage_(shareCuda)(THPStorage *self)
   //     as key in shared_cache(multiprocessing/reduction.py).
   //     Offset in numel cannot uniquely represent a storage.
   PyTuple_SET_ITEM(tuple.get(), 3, _offset_bytes.release());
+  PyTuple_SET_ITEM(tuple.get(), 4, _ref_counter.release());
   return tuple.release();
   END_HANDLE_TH_ERRORS
 }
@@ -255,16 +284,18 @@ static PyObject * THPStorage_(shareCuda)(THPStorage *self)
 static PyObject * THPStorage_(newSharedCuda)(PyObject *_unused, PyObject *args)
 {
   HANDLE_TH_ERRORS
-  THPUtils_assert(PyTuple_GET_SIZE(args) == 4, "tuple of 4 items expected");
+  THPUtils_assert(PyTuple_GET_SIZE(args) == 5, "tuple of 5 items expected");
   PyObject *_device = PyTuple_GET_ITEM(args, 0);
   PyObject *_handle = PyTuple_GET_ITEM(args, 1);
   PyObject *_size_bytes = PyTuple_GET_ITEM(args, 2);
   PyObject *_offset_bytes = PyTuple_GET_ITEM(args, 3);
+  PyObject *_ref_counter = PyTuple_GET_ITEM(args, 4);
   if (!(THPUtils_checkLong(_device) && THPUtils_checkLong(_size_bytes)
       && (_handle != Py_None && PyBytes_Check(_handle))
+      && (_ref_counter != Py_None && PyBytes_Check(_ref_counter))
       && THPUtils_checkLong(_offset_bytes))) {
     THPUtils_invalidArguments(args, nullptr, "_new_shared in CUDA mode", 1,
-        "(int device, bytes handle, int storage_size_bytes, int storage_offset_bytes)");
+        "(int device, bytes handle, int storage_size_bytes, int storage_offset_bytes, string ref_counter)");
     return nullptr;
   }
 
@@ -282,7 +313,10 @@ static PyObject * THPStorage_(newSharedCuda)(PyObject *_unused, PyObject *args)
   }
   THPUtils_assert(handle_size == CUDA_IPC_HANDLE_SIZE, "incorrect handle size");
   std::string s_handle = std::string(buffer, handle_size);
+  // std::cout << "Now open handle " << s_handle << "\n";
   std::shared_ptr<void> basePtr = THCCaching_CUDAIpcDevptr(s_handle);
+
+
 
   // Offset the basePtr to reconstruct the real storage
   // devPtr = basePtr + storage_offset
@@ -294,6 +328,15 @@ static PyObject * THPStorage_(newSharedCuda)(PyObject *_unused, PyObject *args)
       THCIpcDeleter::makeDataPtr(std::move(basePtr), devPtr),
       storage_size, /* allocator */ nullptr));
   base->set_resizable(false);
+
+  std::string ref_counter_handle = PyBytes_AS_STRING(_ref_counter);
+  int flags = TH_ALLOCATOR_MAPPED_SHAREDMEM |
+              TH_ALLOCATOR_MAPPED_NOCREATE;
+  auto sptr = THRefcountedMapAllocator::makeDataPtr(ref_counter_handle.c_str(), flags, sizeof(int64_t), nullptr);
+  base->set_refcounter(ref_counter_handle, std::move(sptr));
+  base->set_cuda_ipc_received(true);
+
+  // std::cout << "RECEIVED ref_counter " << base->get_refcounter_value() << " handle " <<  base->get_refcounter_handle() << "\n";
 
   return THPStorage_(New)(base.release());
   END_HANDLE_TH_ERRORS
@@ -334,6 +377,7 @@ PyObject * THPStorage_(freeWeakRef)(PyObject *_unused, PyObject *arg)
   THPUtils_assert(THPUtils_checkLong(arg),
       "_free_weak_ref(): arg must be an 'int'");
   THStorage *weak_storage = (THStorage*)PyLong_AsVoidPtr(arg);
+  // std::cout << "Deleting weak storage\n";
   c10::raw::weak_intrusive_ptr::decref(weak_storage);
 
   Py_RETURN_NONE;

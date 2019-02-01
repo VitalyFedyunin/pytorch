@@ -35,6 +35,7 @@ static THWStorage* THPStorage_(newWithAllocator)(int64_t size, at::Allocator* al
 
 static PyObject * THPStorage_(pynew)(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
+  std::cout << "Allocating " THPStorageStr " object\n";
   HANDLE_TH_ERRORS
   Py_ssize_t num_args = args ? PyTuple_Size(args) : 0;
 
