@@ -8,6 +8,7 @@
 
 namespace c10 {
 
+// Counts external refs from consumer process(es)
 struct MPRefCounter {
  public:
   void inc_counter();
@@ -19,21 +20,21 @@ struct MPRefCounter {
   std::string get_handle();
 
  private:
-  DataPtr data_ptr_;
+  DataPtr data_ptr_; // DataPtr to location of the ref counting int64
   std::string handle_;
   // int64_t *counter;
 };
 
-struct MPSharedDataBlock {
-  DataPtr data_ptr_;
-  MPRefCounter* ref_counter_;
-};
-
-struct MPSharedStorageLimbo {
-  std::vector<MPSharedDataBlock> shared_blocks_;
-  void collect();
-  void add(MPSharedDataBlock shared_block);
-};
+// struct MPSharedDataBlock {
+//   DataPtr data_ptr_;
+//   MPRefCounter* ref_counter_;
+// };
+//
+// struct MPSharedStorageLimbo {
+//   std::vector<MPSharedDataBlock> shared_blocks_;
+//   void collect();
+//   void add(MPSharedDataBlock shared_block);
+// };
 
 struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
  public:
@@ -216,6 +217,7 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
       at::DataPtr&& data_ptr,
       const caffe2::TypeMeta& data_type,
       size_t capacity) {
+        std::cout << "UniqueStorageShareExternalPointer\n";
     data_type_ = data_type;
     // TODO: Use CAFFE_ENFORCE_WITH_CALLER equivalent
     // For now causes lots of redefine issues if caffe2/core/logging.h is used
@@ -233,12 +235,12 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
     numel_ = capacity / data_type_.itemsize();
   }
 
-  MPRefCounter* get_refcounter();
+  std::shared_ptr<MPRefCounter> get_refcounter();
   int64_t get_refcounter_value();
   std::string get_refcounter_handle();
   void inc_refcounter();
   bool have_refcounter();
-  void set_refcounter(MPRefCounter* ref_counter);
+  // void set_refcounter(MPRefCounter* ref_counter);
   void set_refcounter(std::string handle, DataPtr data_ptr);
 
  private:
@@ -249,6 +251,6 @@ struct C10_API StorageImpl final : public c10::intrusive_ptr_target {
   bool cuda_ipc_sent_;
   bool cuda_ipc_received_;
   Allocator* allocator_;
-  MPRefCounter* ref_counter_;
+  std::shared_ptr<MPRefCounter> ref_counter_;
 };
 } // namespace c10

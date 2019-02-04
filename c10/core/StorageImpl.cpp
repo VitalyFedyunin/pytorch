@@ -4,8 +4,8 @@ namespace c10 {
 
 struct MPSharedDataBlock_ {
   DataPtr data_ptr_;
-  MPRefCounter* ref_counter_;
-  MPSharedDataBlock_(DataPtr data_ptr, MPRefCounter* ref_counter);
+  std::shared_ptr<MPRefCounter> ref_counter_;
+  MPSharedDataBlock_(DataPtr data_ptr, std::shared_ptr<MPRefCounter> ref_counter);
   ~MPSharedDataBlock_();
 };
 
@@ -20,14 +20,15 @@ struct MPSharedStorageLimbo_ {
 
 
 MPSharedDataBlock_::~MPSharedDataBlock_() {
-  delete ref_counter_;
+  data_ptr_.clear();
+  // delete ref_counter_;
 };
 
 MPSharedDataBlock_::MPSharedDataBlock_(
     DataPtr data_ptr,
-    MPRefCounter* ref_counter)
+    std::shared_ptr<MPRefCounter>  ref_counter)
     : data_ptr_(std::move(data_ptr)) {
-  ref_counter_ = ref_counter;
+  ref_counter_ = std::move(ref_counter);
 };
 
 void MPSharedStorageLimbo_::final_collect() {
@@ -35,7 +36,9 @@ void MPSharedStorageLimbo_::final_collect() {
 }
 
 MPSharedStorageLimbo_::~MPSharedStorageLimbo_() {
+  // std::cout << "Limbo final collect\n";
   final_collect();
+  // std::cout << "Limbo final collect completed\n";
 }
 
 void MPSharedStorageLimbo_::collect() {
@@ -60,7 +63,9 @@ void MPSharedStorageLimbo_::collect(bool require_everything_released) {
   if (col > 0 ){
    // std::cout << "Collected ref_counter (s) " << col             << "\n";
            }
+  // std::cout << "Limbo collect completed\n";
   shared_blocks_ = referenced_blocks;
+  // std::cout << "Moving vector completed\n";
 }
 
 MPSharedStorageLimbo_ limbo;
@@ -113,7 +118,7 @@ void StorageImpl::release_resources() {
           // std::cout << "DEST Free shared resource and ref_counter "
           //           << get_refcounter()->get_handle() << " now at "
           //           << get_refcounter()->get_count() << "\n";
-          delete ref_counter_;
+          ref_counter_ = nullptr;
           data_ptr_.clear();
         }
       } else {
@@ -129,7 +134,7 @@ void StorageImpl::release_resources() {
             data_ptr_.clear();
           } else {
             // TODO: Delete counter file
-            delete ref_counter_;
+            ref_counter_ = nullptr;
             data_ptr_.clear();
           }
         }
@@ -145,7 +150,7 @@ void StorageImpl::reset() {
   numel_ = 0;
 }
 
-MPRefCounter* StorageImpl::get_refcounter() {
+std::shared_ptr<MPRefCounter> StorageImpl::get_refcounter() {
   // TODO: lock here
   if (ref_counter_ == nullptr) {
     AT_ERROR("Undefined refcounter");
@@ -158,12 +163,12 @@ bool StorageImpl::have_refcounter() {
   return ref_counter_ != nullptr;
 };
 
-void StorageImpl::set_refcounter(MPRefCounter* ref_counter) {
-  ref_counter_ = ref_counter;
-};
+// void StorageImpl::set_refcounter(MPRefCounter* ref_counter) {
+//   ref_counter_ = ref_counter;
+// };
 
 void StorageImpl::set_refcounter(std::string handle, DataPtr data_ptr) {
-  ref_counter_ = new MPRefCounter(handle, std::move(data_ptr));
+  ref_counter_ = std::shared_ptr<MPRefCounter>(new MPRefCounter(handle, std::move(data_ptr)));
 };
 
 void MPRefCounter::inc_counter() {
@@ -200,7 +205,8 @@ void StorageImpl::inc_refcounter() {
 
 std::string StorageImpl::get_refcounter_handle() {
   // std::cout << "get_refcounter_handle\n";
-  return get_refcounter()->get_handle();
+  auto ref_counter = get_refcounter().get();
+  return ref_counter->get_handle();
 };
 
 int64_t StorageImpl::get_refcounter_value() {
