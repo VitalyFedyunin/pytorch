@@ -10,6 +10,7 @@ function_test_metadata_yaml = os.path.join(path, 'native_functions_test_metadata
 declarations_yaml =  os.path.join(path, '../aten/src/ATen/Declarations.cwrap')
 under_test = dict()
 declarations_th = dict()
+native = dict()
 allowed_fields = [
 ('aten_ported_cpu', 'If operator ported from TH to Aten', 'False')
 ]
@@ -42,6 +43,7 @@ def test_meta_modify_functions(fnames, **kwargs):
         for k, v in kwargs.items():
             under_test[fname][k] = v
 
+
 def update_test_meta():
     global under_test
     result = list()
@@ -56,6 +58,7 @@ def get_all_functions():
     global under_test
     global declarations_th
     global declarations_cnames
+    global native
 
     with open(declarations_yaml, 'r') as file:
         content = file.read()
@@ -77,7 +80,6 @@ def get_all_functions():
         for f in yaml.load(file.read()):
             under_test[f['func']] = f
 
-    native = dict()
     with open(aten_native_yaml, 'r') as file:
         for f in yaml.load(file.read()):
             m = re.search(r'^([^(.]+)', f['func'])
@@ -138,6 +140,42 @@ def get_all_functions():
                         test_meta_modify_functions(k, requires_porting_from_th_cpu = True)
                     if dv.startswith('legacy::cuda::'):
                         test_meta_modify_functions(k, requires_porting_from_th_cuda = True)
+
+    cuda_ports = dict()
+    for k,v in under_test.items():
+        if v.get('requires_porting_from_th_cuda', False):
+            canonical = k
+            if canonical[-1] == '_':
+                canonical = canonical[:-1]
+            if canonical not in cuda_ports:
+                cuda_ports[canonical] = []
+            cuda_ports[canonical].append(k)
+
+    for v in cuda_ports.values():
+        title = "Migrate "
+        v_q = ["`"+v_+"`" for v_ in v]
+        title += " and ".join(v_q)
+        title += " from the TH to Aten (CUDA)"
+        print(title)
+
+    cpu_ports = dict()
+    for k,v in under_test.items():
+        if v.get('requires_porting_from_th_cpu', False):
+            canonical = k
+            if canonical[-1] == '_':
+                canonical = canonical[:-1]
+            if canonical not in cpu_ports:
+                cpu_ports[canonical] = []
+            cpu_ports[canonical].append(k)
+
+    for v in cpu_ports.values():
+        title = "Migrate "
+        v_q = ["`"+v_+"`" for v_ in v]
+        title += " and ".join(v_q)
+        title += " from the TH to Aten (CPU)"
+        print(title)
+    # print(json.dumps(cuda_ports,indent=4))
+
 
 
 get_all_functions()
