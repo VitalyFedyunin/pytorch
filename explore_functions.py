@@ -5,9 +5,9 @@ import yaml
 from collections import OrderedDict
 
 path = os.path.dirname(os.path.realpath(__file__))
-aten_native_yaml = os.path.join(path, '../aten/src/ATen/native/native_functions.yaml')
+aten_native_yaml = os.path.join(path, 'aten/src/ATen/native/native_functions.yaml')
 function_test_metadata_yaml = os.path.join(path, 'native_functions_test_metadata.yaml')
-declarations_yaml =  os.path.join(path, '../aten/src/ATen/Declarations.cwrap')
+declarations_yaml =  os.path.join(path, 'aten/src/ATen/Declarations.cwrap')
 under_test = dict()
 declarations_th = dict()
 native = dict()
@@ -143,7 +143,7 @@ def get_all_functions():
 
     cuda_ports = dict()
     for k,v in under_test.items():
-        if v.get('requires_porting_from_th_cuda', False):
+        if v.get('requires_porting_from_th_cuda', False) and not v.get('requires_porting_from_th_cuda_issue', 0):
             canonical = k
             if canonical[-1] == '_':
                 canonical = canonical[:-1]
@@ -151,12 +151,27 @@ def get_all_functions():
                 cuda_ports[canonical] = []
             cuda_ports[canonical].append(k)
 
+    from github import Github
+    g = Github("603242c08d581078261d26c5f526d6a3920e32c5")
+    repo = g.get_repo("pytorch/pytorch")
+
+    label_triaged = repo.get_label("triaged")
+    label_porting = repo.get_label("topic: porting" )
+    label_operators = repo.get_label("module: operators" )
+    label_be = repo.get_label("better-engineering" )
+
+    labels = [label_triaged, label_operators, label_be, label_porting]
+
+    body = "Porting TH operators is essential for code simplicity and performance reasons.\n\nPorting guides and Q&A are available in umbrella issue: #24507\n\nFeel free to add @VitalyFedyunin as a reviewer to get a prioritized review."
+
     for v in cuda_ports.values():
         title = "Migrate "
         v_q = ["`"+v_+"`" for v_ in v]
         title += " and ".join(v_q)
         title += " from the TH to Aten (CUDA)"
-        print(title)
+        # issue = repo.create_issue(title=title, body=body, labels = labels)
+        # print("- [ ] #%s %s" % (issue.number, title))
+
 
     cpu_ports = dict()
     for k,v in under_test.items():
@@ -173,10 +188,12 @@ def get_all_functions():
         v_q = ["`"+v_+"`" for v_ in v]
         title += " and ".join(v_q)
         title += " from the TH to Aten (CPU)"
-        print(title)
+        issue = repo.create_issue(title=title, body=body, labels = labels)
+        print("- [ ] #%s %s" % (issue.number, title))
+
     # print(json.dumps(cuda_ports,indent=4))
 
 
 
-get_all_functions()
-update_test_meta()
+#get_all_functions()
+#update_test_meta()
