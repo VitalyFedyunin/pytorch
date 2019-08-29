@@ -159,10 +159,10 @@
   requires_porting_from_th_cuda: false
 - func: ceil
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: ceil_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: cholesky_inverse
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -197,10 +197,10 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: digamma
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: digamma_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: dist
   requires_porting_from_th_cpu: true
@@ -242,11 +242,11 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: erfinv
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: erfinv_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: exp
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
@@ -482,16 +482,16 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: false
 - func: polygamma
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: polygamma_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: pow
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: pow_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: put_
   requires_porting_from_th_cpu: true
@@ -557,11 +557,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: sign
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: sign_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: sin
   exists: true
   requires_porting_from_th_cpu: false
@@ -648,7 +648,7 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: topk
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: trace
   requires_porting_from_th_cpu: true

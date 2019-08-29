@@ -152,15 +152,15 @@ def get_all_functions():
             cuda_ports[canonical].append(k)
 
     from github import Github
-    g = Github("603242c08d581078261d26c5f526d6a3920e32c5")
-    repo = g.get_repo("pytorch/pytorch")
+    # g = Github("603242c08d581078261d26c5f526d6a3920e32c5")
+    # repo = g.get_repo("pytorch/pytorch")
 
-    label_triaged = repo.get_label("triaged")
-    label_porting = repo.get_label("topic: porting" )
-    label_operators = repo.get_label("module: operators" )
-    label_be = repo.get_label("better-engineering" )
+    # label_triaged = repo.get_label("triaged")
+    # label_porting = repo.get_label("topic: porting" )
+    # label_operators = repo.get_label("module: operators" )
+    # label_be = repo.get_label("better-engineering" )
 
-    labels = [label_triaged, label_operators, label_be, label_porting]
+    # labels = [label_triaged, label_operators, label_be, label_porting]
 
     body = "Porting TH operators is essential for code simplicity and performance reasons.\n\nPorting guides and Q&A are available in umbrella issue: #24507\n\nFeel free to add @VitalyFedyunin as a reviewer to get a prioritized review."
 
@@ -188,12 +188,12 @@ def get_all_functions():
         v_q = ["`"+v_+"`" for v_ in v]
         title += " and ".join(v_q)
         title += " from the TH to Aten (CPU)"
-        issue = repo.create_issue(title=title, body=body, labels = labels)
-        print("- [ ] #%s %s" % (issue.number, title))
+        # issue = repo.create_issue(title=title, body=body, labels = labels)
+        # print("- [ ] #%s %s" % (issue.number, title))
 
     # print(json.dumps(cuda_ports,indent=4))
 
 
 
-#get_all_functions()
-#update_test_meta()
+get_all_functions()
+update_test_meta()
