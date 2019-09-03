@@ -167,10 +167,10 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: clamp
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: clamp_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: clone
   requires_porting_from_th_cpu: false
@@ -437,7 +437,7 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: multinomial
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: mv
   requires_porting_from_th_cpu: true
