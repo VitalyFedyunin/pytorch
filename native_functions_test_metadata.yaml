@@ -198,10 +198,10 @@
   requires_porting_from_th_cuda: true
 - func: digamma
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: digamma_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: dist
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -483,16 +483,16 @@
   requires_porting_from_th_cuda: false
 - func: polygamma
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: polygamma_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: pow
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: pow_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: put_
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
