@@ -516,10 +516,10 @@
   requires_porting_from_th_cuda: false
 - func: round
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: round_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: rrelu_with_noise
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -531,10 +531,10 @@
   requires_porting_from_th_cuda: true
 - func: rsqrt
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: rsqrt_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: scatter
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -609,8 +609,8 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: std
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: take
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -666,8 +666,8 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: false
 - func: var
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: zero_
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
