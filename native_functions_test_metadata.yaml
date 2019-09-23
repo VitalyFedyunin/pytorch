@@ -29,11 +29,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: _addmm
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: _addmm_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: _addr
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -267,10 +267,10 @@
   requires_porting_from_th_cuda: true
 - func: floor
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: floor_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: fmod
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -359,10 +359,10 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: lgamma
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: lgamma_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: log
   requires_porting_from_th_cpu: false
