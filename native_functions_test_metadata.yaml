@@ -655,10 +655,10 @@
   requires_porting_from_th_cuda: true
 - func: trunc
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: trunc_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: unfold
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
