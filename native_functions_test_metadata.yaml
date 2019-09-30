@@ -221,11 +221,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: eq
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: eq_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: equal
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -287,11 +287,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: ge
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: ge_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: geometric_
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: false
@@ -308,11 +308,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: gt
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: gt_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: hardtanh
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -344,11 +344,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: le
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: le_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: leaky_relu
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -401,11 +401,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: lt
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: lt_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: max
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -443,11 +443,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: ne
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: ne_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: neg
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
