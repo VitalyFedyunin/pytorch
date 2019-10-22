@@ -369,22 +369,22 @@
   requires_porting_from_th_cuda: false
 - func: log10
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log10_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log1p
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log1p_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log2
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log2_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: log_
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
@@ -425,10 +425,10 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: multi_margin_loss
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: multi_margin_loss_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: multilabel_margin_loss_backward
   requires_porting_from_th_cpu: true
@@ -604,10 +604,10 @@
   requires_porting_from_th_cuda: true
 - func: sqrt
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sqrt_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: std
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
