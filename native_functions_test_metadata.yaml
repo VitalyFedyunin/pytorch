@@ -14,8 +14,8 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: __ixor__
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: __lshift__
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -26,8 +26,8 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: __xor__
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: _addmm
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
@@ -75,16 +75,16 @@
   requires_porting_from_th_cuda: true
 - func: abs
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: abs_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: acos
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: acos_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: addbmm
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -126,10 +126,10 @@
   requires_porting_from_th_cuda: false
 - func: asin
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: asin_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: atan
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
@@ -263,8 +263,8 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: false
 - func: fill_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: floor
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
@@ -279,10 +279,10 @@
   requires_porting_from_th_cuda: true
 - func: frac
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: frac_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: gather
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -335,14 +335,14 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: is_set_to
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: l1_loss
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: l1_loss_backward
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: le
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
@@ -419,11 +419,11 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: mse_loss
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: mse_loss_backward
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: multi_margin_loss
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
@@ -431,10 +431,10 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: multilabel_margin_loss_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: multilabel_margin_loss_forward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: multinomial
   requires_porting_from_th_cpu: false
@@ -455,16 +455,16 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: nll_loss2d_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: nll_loss2d_forward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: nll_loss_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: nll_loss_forward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: nonzero
   requires_porting_from_th_cpu: true
@@ -549,10 +549,10 @@
   requires_porting_from_th_cuda: true
 - func: sigmoid
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sigmoid_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sigmoid_backward
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -565,22 +565,22 @@
 - func: sin
   exists: true
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sin_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sinh
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: sinh_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: smooth_l1_loss
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: smooth_l1_loss_backward
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: soft_margin_loss
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
@@ -630,16 +630,16 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: thnn_conv2d_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: thnn_conv2d_forward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: thnn_conv3d_backward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: thnn_conv3d_forward
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: thnn_conv_depthwise2d_backward
   requires_porting_from_th_cpu: false
@@ -660,8 +660,8 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: unfold
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: uniform_
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: false
@@ -669,6 +669,6 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: zero_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
   requires_porting_from_th_cuda_issue: 24654

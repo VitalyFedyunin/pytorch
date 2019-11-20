@@ -94,8 +94,8 @@ def get_all_functions():
                 else:
                     native[short_name] = [f]
     # print(json.dumps(len(native.keys()),indent=4))
-    print(json.dumps(native['sin_'],indent=4))
-    print(json.dumps(declarations_cnames['zero_'],indent=4))
+    # print(json.dumps(native['sin_'],indent=4))
+    # print(json.dumps(declarations_cnames['zero_'],indent=4))
     # print(json.dumps(under_test['sin'],indent=4))
 
     # print(json.dumps(len(declarations_th.keys()), indent=4))
