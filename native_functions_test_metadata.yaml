@@ -212,14 +212,14 @@
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
 - func: elu
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: elu_
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: elu_backward
-  requires_porting_from_th_cpu: true
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cpu: false
+  requires_porting_from_th_cuda: false
 - func: eq
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
