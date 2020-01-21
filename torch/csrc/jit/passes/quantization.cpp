@@ -700,7 +700,7 @@ void InsertQuantDeQuantHelper::removeObservers(
   // Remove observer modules from last one to first one in order to
   // reduce the time complexity, assuming all the observer modules
   // are added after the existing modules, we'll have complexity of
-  // O(N) where N is number of observer moduels with this optimization
+  // O(N) where N is number of observer modules with this optimization
   if (observer_modules_to_remove_.count(g)) {
     const auto& observers = observer_modules_to_remove_.at(g);
     for (int64_t i = observers.size() - 1; i >= 0; --i) {
@@ -1201,20 +1201,19 @@ static bool tryExtractingConvBNParameters(
     ConvBNParameters& r) {
   if (!hastensor(conv, "weight") || !hastensor(bn, "weight") ||
       !hastensor(bn, "bias") || !hastensor(bn, "running_mean") ||
-      !hastensor(bn, "running_var")) {
+      !hastensor(bn, "running_var") ||
+      !bn.hasattr("eps")) {
     return false;
   }
 
   r.bn_rm = bn.attr("running_mean").toTensor();
   r.bn_rv = bn.attr("running_var").toTensor();
-  r.bn_eps = 1e-5; // TODO: allow access to the actual value. NOLINT
-                   // Now we cannot do it because we inline all fields that are
-                   // in __constants__ and lose all tracks of them.
+  r.bn_eps = bn.attr("eps").toDouble();
   r.bn_w = bn.attr("weight").toTensor();
   r.bn_b = bn.attr("bias").toTensor();
 
   r.conv_w = conv.attr("weight").toTensor();
-  if (conv.hasattr("bias")) {
+  if (hastensor(conv, "bias")) {
     r.conv_b = conv.attr("bias").toTensor();
   } else {
     r.conv_b = at::zeros_like(r.bn_rm);
@@ -1310,9 +1309,21 @@ graph(%self, %x):
 
       auto new_w_b = computeUpdatedConvWeightAndBias(params);
       conv_submodule.setattr("weight", std::get<0>(new_w_b));
-      if (conv_submodule.hasattr("bias")) {
+      if (hastensor(conv_submodule, "bias")) {
         conv_submodule.setattr("bias", std::get<1>(new_w_b));
       } else {
+        // conv module has an existing non-Tensor bias
+        if (conv_submodule.hasattr("bias")) {
+          if (conv_submodule._ivalue()->type()->hasConstant("bias")) {
+            GRAPH_UPDATE("Removing bias constant from conv module");
+            conv_submodule.type()->unsafeRemoveConstant("bias");
+          } else {
+            TORCH_CHECK(conv_submodule.type()->findAttributeSlot("bias").has_value());
+            GRAPH_UPDATE("Removing existing non-Tensor bias attribute from conv module");
+            conv_submodule._ivalue()->unsafeRemoveAttr("bias");
+            conv_submodule.type()->unsafeRemoveAttribute("bias");
+          }
+        }
         conv_submodule.register_parameter("bias", std::get<1>(new_w_b), false);
       }
     }
