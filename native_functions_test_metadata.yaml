@@ -284,7 +284,7 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: gather
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: true
 - func: ge
   requires_porting_from_th_cpu: false
@@ -389,7 +389,7 @@
   requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: log_normal_
-  requires_porting_from_th_cpu: true
+  requires_porting_from_th_cpu: false
   requires_porting_from_th_cuda: false
 - func: log_sigmoid_backward
   requires_porting_from_th_cpu: false
