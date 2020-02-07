@@ -72,7 +72,6 @@ def get_all_functions():
     with open(declarations_yaml, "r") as file:
         content = file.read()
         for match in re.finditer(r"\[\[(.*?)\]\]", content, re.S):
-            # print(match.group(1))
             a = yaml.load(match.group(1))
             declarations_th[a["name"]] = a
             if "cname" in a:
@@ -81,7 +80,6 @@ def get_all_functions():
             if "options" in a:
                 for o in a["options"]:
                     if "cname" in o:
-                        # print(json.dumps(o,indent=4))
                         declarations_cnames[o["cname"]] = a
                         declarations_cnames[o["cname"] + "_"] = a
 
@@ -92,11 +90,8 @@ def get_all_functions():
     with open(aten_native_yaml, "r") as file:
         for f in yaml.load(file.read()):
             m = re.search(r"^([^(.]+)", f["func"])
-            # m = re.search(r'^([^.(]+)', f['func'])
             if m:
                 short_name = m.group(0)
-                # if short_name[-1] == '_':
-                #     short_name = short_name[:-1]
                 f["short_name"] = short_name
                 if short_name in native:
                     native[short_name].append(f)
@@ -138,9 +133,6 @@ def get_all_functions():
                     requires_porting_from_th_cpu=True,
                     requires_porting_from_th_cuda=True,
                 )
-        else:
-            # print(json.dumps(v, indent=4))
-            pass
     print("Total recorded declarations:", total)
 
     for k, v in native.items():
