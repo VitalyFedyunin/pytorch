@@ -327,7 +327,7 @@
   requires_porting_from_th_cuda: false
 - func: index_add_
   requires_porting_from_th_cpu: false
-  requires_porting_from_th_cuda: true
+  requires_porting_from_th_cuda: false
 - func: index_fill_
   requires_porting_from_th_cpu: true
   requires_porting_from_th_cuda: true
